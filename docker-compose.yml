@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: job_scraper_app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:6-alpine
+    container_name: job_scraper_cache
+    ports:
+      - "6379:6379"
+    command: redis-server --save "" --appendonly no
+    restart: unless-stopped

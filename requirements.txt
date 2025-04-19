@@ -1,0 +1,10 @@
+# requirements.txt
+
+streamlit
+pandas
+requests
+beautifulsoup4
+playwright
+redis
+asyncio
+lxml
