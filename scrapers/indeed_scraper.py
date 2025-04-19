@@ -5,6 +5,19 @@ from bs4 import BeautifulSoup
 from .base import JobScraper
 
 class IndeedScraper(JobScraper):
+    COUNTRY_DOMAINS = {
+        "argentina": "ar",
+        "mexico": "mx",
+        "colombia": "co",
+        "chile": "cl",
+        "peru": "pe",
+        "uruguay": "uy",
+        "ecuador": "ec",
+        "venezuela": "ve",
+        "bolivia": "bo",
+        "paraguay": "py",
+        "panama": "pa",
+    }
     def scrape(self, keywords, country, pages=1):
         cache_key = self._make_cache_key("indeed", keywords, country, pages)
         cached = self.get_cached(cache_key)
@@ -13,7 +26,8 @@ class IndeedScraper(JobScraper):
 
         results = []
         headers = {"User-Agent": "Mozilla/5.0"}
-        base_url = f"https://{country.lower()}.indeed.com/jobs"
+        cc = self.COUNTRY_DOMAINS.get(country.lower(), "www")
+        base_url = f"https://{cc}.indeed.com/jobs"
 
         for i in range(pages):
             self._throttle()

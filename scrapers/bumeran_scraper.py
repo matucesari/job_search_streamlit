@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from .base import JobScraper
 
 class BumeranScraper(JobScraper):
+
     def scrape(self, keywords, country, pages=1):
         cache_key = self._make_cache_key("bumeran", keywords, country, pages)
         cached = self.get_cached(cache_key)
@@ -36,18 +37,19 @@ class BumeranScraper(JobScraper):
                 content = await page.content()
                 soup = BeautifulSoup(content, "html.parser")
 
-                for card in soup.select(".aviso a.aviso_link"),:
+                for card in soup.select(".aviso"):
                     title_el = card.select_one(".aviso_title")
                     company_el = card.select_one(".aviso_empresa")
                     location_el = card.select_one(".aviso_lugar")
-                    if title_el and company_el and location_el:
+                    link_el = card.select_one("a.aviso_link")
+                    if title_el and company_el and location_el and link_el:
                         results.append({
                             "portal": "Bumeran",
                             "title": title_el.get_text(strip=True),
                             "employer": company_el.get_text(strip=True),
                             "location": location_el.get_text(strip=True),
                             "contract": None,
-                            "url": "https://www.bumeran.com.ar" + card.get("href")
+                            "url": "https://www.bumeran.com.ar" + link_el.get("href")
                         })
 
             await context.close()
