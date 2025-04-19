@@ -86,31 +86,30 @@ Causa: El país "México" fue interpretado como parte del subdominio y convertid
 Solución: En el scraper de Indeed y Jooble, debemos usar el código de país estándar (por ejemplo, mx) como parte del dominio, no el nombre completo.
 
 Modificar en los scrapers:
-<
+```bash
 base_url = f"https://{country.lower()}.indeed.com/jobs"
->
+```
 por:
-
-<
+```bash
 country_code = {"argentina": "ar", "mexico": "mx", "chile": "cl", "colombia": "co", ...}
 base_url = f"https://{country_code.get(country.lower(), 'www')}.indeed.com/jobs"
->
+```
 Y lo mismo para Jooble.
 
 También podríamos aplicar una función de normalización de país que remapee "México" → "mx", "Argentina" → "ar", etc.
 
  2. Error en Bumeran:
-Causa: Estás haciendo: for card in soup.select(".aviso a.aviso_link"),:
-    card.select_one(...)
-pero soup.select(...) ya devuelve una lista, y al agregar , estás creando una tupla de una lista, no iterando sobre los elementos. Es un error sutil de sintaxis.
+Causa: Estás haciendo: ```for card in soup.select(".aviso a.aviso_link"),:
+    card.select_one(...)```
+pero ```soup.select(...)``` ya devuelve una lista, y al agregar , estás creando una tupla de una lista, no iterando sobre los elementos. Es un error sutil de sintaxis.
 Reemplazá:
-<
+```bash
 for card in soup.select(".aviso a.aviso_link"),:
->
+```
 por:
-<
+```bash
 for card in soup.select(".aviso a.aviso_link"):
->
+```
 
 ## ✅ Recomendaciones:
 Agregar try/except por scraper para capturar excepciones y continuar con los demás portales sin frenar la app.
