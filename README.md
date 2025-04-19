@@ -78,3 +78,44 @@ Los resultados se muestran en una tabla y pueden descargarse como archivo CSV.
 ## 📬 Contacto
 Desarrollado por: **Matilde I Césari**  
 Repositorio: [github.com/matucesari/job-search-streamlit](https://github.com/matucesari/job-search-streamlit)
+
+## ✅ Fix
+
+1. Error en Indeed y Jooble: problema de dominio punycode "México"
+Causa: El país "México" fue interpretado como parte del subdominio y convertido automáticamente a punycode (xn--mxico-bsa).
+Solución: En el scraper de Indeed y Jooble, debemos usar el código de país estándar (por ejemplo, mx) como parte del dominio, no el nombre completo.
+
+Modificar en los scrapers:
+<
+base_url = f"https://{country.lower()}.indeed.com/jobs"
+>
+por:
+
+<
+country_code = {"argentina": "ar", "mexico": "mx", "chile": "cl", "colombia": "co", ...}
+base_url = f"https://{country_code.get(country.lower(), 'www')}.indeed.com/jobs"
+>
+Y lo mismo para Jooble.
+
+También podríamos aplicar una función de normalización de país que remapee "México" → "mx", "Argentina" → "ar", etc.
+
+ 2. Error en Bumeran:
+Causa: Estás haciendo: for card in soup.select(".aviso a.aviso_link"),:
+    card.select_one(...)
+pero soup.select(...) ya devuelve una lista, y al agregar , estás creando una tupla de una lista, no iterando sobre los elementos. Es un error sutil de sintaxis.
+Reemplazá:
+<
+for card in soup.select(".aviso a.aviso_link"),:
+>
+por:
+<
+for card in soup.select(".aviso a.aviso_link"):
+>
+
+## ✅ Recomendaciones:
+Agregar try/except por scraper para capturar excepciones y continuar con los demás portales sin frenar la app.
+* Mostrar logs de errores al usuario (como estás haciendo).
+* Probar con otros términos (python, data, analista) para descartar que no haya resultados reales.
+* Hacer debug con st.write(soup.prettify()[:1000]) para ver si se está obteniendo el HTML esperado.
+
+
